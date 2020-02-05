@@ -2,11 +2,11 @@ import java.util.Random;
 
 ArrayList<MovingNode> nodes;
 float maxDistance = 65;
-float dx = 5;
+float dx = 10;
 float dy = 30;
-float maxNeighbors = 10;
+float maxNeighbors = 15;
 AudioAnalyzer a;
-float audioThreshold = 0.01;
+float audioThreshold = 0.001;
 float amplitude;
 float[] spectrum;
 Boolean drawMode = true;
@@ -27,7 +27,7 @@ void draw_poly() {
   amplitude = a.get_amplitude();
   spectrum = a.get_spectrum();
 
-  for(int i=0; i < spectrum.length; i += 2) {
+  for(int i=0; i < spectrum.length; i ++) {
     if (spectrum[i] > audioThreshold) {
       addNewNode(width / a.bands * i * 8, height / 2, 
         random(-dx, dx),random(-dy* spectrum[i] * 100, dy * spectrum[i] * 100));
@@ -53,9 +53,9 @@ void draw_poly() {
       MovingNode neighborNode = currentNode.neighbors.get(j);
       //float lineColor = currentNode.calculateLineColor(neighborNode,maxDistance);
       float lineColor = currentNode.calculateLineColor_decay(neighborNode);
-      stroke(lerpColor(color(180, 180, 255), color(255, 50, 50), 
+      stroke(lerpColor(color(100, 100, 255), color(255, 50, 50), 
              lineColor / currentNode.lineColorRange));
-      strokeWeight(lineColor / pow(currentNode.lineColorRange, 0.75)); 
+      strokeWeight(lineColor/ 2 / pow(currentNode.lineColorRange, 0.75)); 
       line(currentNode.x,currentNode.y,neighborNode.x,neighborNode.y);
     }
     currentNode.display();
@@ -93,8 +93,8 @@ class MovingNode {
   int time_alive = 0;
   ArrayList<MovingNode> neighbors;
   float lineColor;
-  float nodeWidth = 3;
-  float nodeHeight = 3;
+  float nodeWidth = 1;
+  float nodeHeight = 1;
   float fillColor = 50;
   float lineColorRange = 120;
   
@@ -114,7 +114,6 @@ class MovingNode {
   
   void display() {
     move();
-    
     noStroke();
     fill(fillColor);
     ellipse(x,y,nodeWidth,nodeHeight);
