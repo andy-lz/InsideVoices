@@ -1,21 +1,24 @@
 import java.util.Random;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
-ArrayList<MovingNode> nodes;
+LinkedList<MovingNode> nodes;
 float maxDistance = 65;
 float dx = 10;
 float dy = 30;
-float maxNeighbors = 15;
+float maxNeighbors = 10;
 AudioAnalyzer a;
 float audioThreshold = 0.001;
 float amplitude;
 float[] spectrum;
 Boolean drawMode = true;
+int max_time_alive = 60;
 Random random_no;
 
 
 void setup_poly() {
   background(255,255,255);
-  nodes = new ArrayList<MovingNode>();
+  nodes = new LinkedList<MovingNode>();
   a = new AudioAnalyzer(this);
   random_no = new Random();
 }
@@ -27,30 +30,23 @@ void draw_poly() {
   amplitude = a.get_amplitude();
   spectrum = a.get_spectrum();
 
-  for(int i=0; i < spectrum.length; i ++) {
+  for(int i=0; i < spectrum.length; i+=2) {
     if (spectrum[i] > audioThreshold) {
       addNewNode(width / a.bands * i * 8, height / 2, 
-        random(-dx, dx),random(-dy* spectrum[i] * 100, dy * spectrum[i] * 100));
-    }
-  }
- 
-  for(int i=0; i<nodes.size(); i++) {
-    MovingNode currentNode = nodes.get(i);
-    currentNode.setNumNeighbors( countNumNeighbors(currentNode,maxDistance) );
-  }
-  
-  for(int i=0; i<nodes.size(); i++) {
-    MovingNode currentNode = nodes.get(i);
-    if(currentNode.x > width || currentNode.x < 0 || currentNode.y > height || currentNode.y < 0) {
-      nodes.remove(currentNode);
+        random(-dx, dx), random(-dy* spectrum[i] * 100, dy * spectrum[i] * 100));
     }
   }
   
   // O(n^2) line drawing between nodes
-  for(int i = 0; i < nodes.size(); i++) {
-    MovingNode currentNode = nodes.get(i);
-    for(int j=0; j<currentNode.neighbors.size(); j++) {
-      MovingNode neighborNode = currentNode.neighbors.get(j);
+  ListIterator<MovingNode> i = nodes.listIterator();
+  while (i.hasNext()) {
+    MovingNode currentNode = i.next();
+    if(currentNode.x > width || currentNode.x < 0 || currentNode.y > height || currentNode.y < 0 || currentNode.time_alive > max_time_alive) {
+      i.remove();
+      continue;
+    }
+    currentNode.setNumNeighbors( countNumNeighbors(currentNode,maxDistance) );
+    for(MovingNode neighborNode : nodes) {
       //float lineColor = currentNode.calculateLineColor(neighborNode,maxDistance);
       float lineColor = currentNode.calculateLineColor_decay(neighborNode);
       stroke(lerpColor(color(100, 100, 255), color(255, 50, 50), 
@@ -75,10 +71,10 @@ void addNewNode(float xPos, float yPos, float dx, float dy) {
 int countNumNeighbors(MovingNode nodeA, float maxNeighborDistance) {
   int numNeighbors = 0;
   nodeA.clearNeighbors();
-  for(int i = 0; i < nodes.size(); i++) {
-    MovingNode nodeB = nodes.get(i);
-    float distance = sqrt((nodeA.x-nodeB.x)*(nodeA.x-nodeB.x) + (nodeA.y-nodeB.y)*(nodeA.y-nodeB.y));
-    if(distance < maxNeighborDistance) {
+  float d2 = maxNeighborDistance * maxNeighborDistance;
+  for(MovingNode nodeB : nodes) {
+    float distance = (nodeA.x-nodeB.x)*(nodeA.x-nodeB.x) + (nodeA.y-nodeB.y)*(nodeA.y-nodeB.y);
+    if(distance < d2) {
       numNeighbors++;
       nodeA.addNeighbor(nodeB);
     }
@@ -93,8 +89,7 @@ class MovingNode {
   int time_alive = 0;
   ArrayList<MovingNode> neighbors;
   float lineColor;
-  float nodeWidth = 1;
-  float nodeHeight = 1;
+  float nodeRadius = 1;
   float fillColor = 50;
   float lineColorRange = 120;
   
@@ -116,7 +111,7 @@ class MovingNode {
     move();
     noStroke();
     fill(fillColor);
-    ellipse(x,y,nodeWidth,nodeHeight);
+    circle(x,y,nodeRadius);
   }
   
   void move() {
