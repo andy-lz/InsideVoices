@@ -46,7 +46,7 @@ void draw_poly() {
       continue;
     }
     currentNode.setNumNeighbors( countNumNeighbors(currentNode,maxDistance) );
-    for(MovingNode neighborNode : nodes) {
+    for(MovingNode neighborNode : currentNode.neighbors) {
       //float lineColor = currentNode.calculateLineColor(neighborNode,maxDistance);
       float lineColor = currentNode.calculateLineColor_decay(neighborNode);
       stroke(lerpColor(color(100, 100, 255), color(255, 50, 50), 
@@ -143,6 +143,7 @@ class MovingNode {
     lineColor = (distance/maxDistance)*lineColorRange;
     return lineColor;
   }
+  
   float calculateLineColor_decay(MovingNode neighborNode){
     int max_time_alive = max(neighborNode.time_alive, this.time_alive);
     lineColor = max(lineColorRange - max_time_alive, 0);
