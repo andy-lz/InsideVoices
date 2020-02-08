@@ -3,7 +3,11 @@ int TEST_FLAG = 0;
 int POLY_FLAG = 1;
 
 void setup() {
+<<<<<<< Updated upstream
   size(900, 600);
+=======
+  size(900, 800);
+>>>>>>> Stashed changes
   // pixelDensity(2);
   if (TEST_FLAG > 0) {
     setup_test(); // setup for AudioAnalyzer test
