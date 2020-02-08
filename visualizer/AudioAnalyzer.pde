@@ -1,10 +1,12 @@
 import processing.sound.*;
 
 class AudioAnalyzer extends PApplet {
-  AudioIn audio_in;
+  SoundObject audio_in;
   Amplitude amp;
   FFT fft;
   int input_stream = 0;
+  int PATH_FLAG = 0;
+  String audio_path;
   int bands = 512;
   int smoother = 0;
   float bandwidth;
@@ -26,6 +28,14 @@ class AudioAnalyzer extends PApplet {
      this.analyze();
   }
   
+  AudioAnalyzer(PApplet sketch, String path) {
+     this.base = sketch;
+     this.PATH_FLAG = 1;
+     this.audio_path = path;
+     this.initialize();
+     this.analyze();
+  }
+  
   AudioAnalyzer(PApplet sketch, int bands_num, int lowell_smoother) {
      this.base = sketch;
      this.bands = bands_num;
@@ -36,8 +46,13 @@ class AudioAnalyzer extends PApplet {
   
   private void initialize() {
      // Audio Input
-     this.audio_in = new AudioIn(this.base, this.input_stream);
-     this.audio_in.start();
+     if (this.PATH_FLAG == 0) {
+       this.audio_in = new AudioIn(this.base, this.input_stream);
+       ((AudioIn) this.audio_in).start();
+     } else {
+       this.audio_in = new SoundFile(this.base, this.audio_path);
+       this.audio_in.play();
+     }
      // Amplitude calculator
      this.amp = new Amplitude(this.base);
      this.amp.input(this.audio_in);

@@ -2,9 +2,15 @@
 import processing.sound.*;
 float[] spectrum_test;
 AudioAnalyzer a_test;
+String audio_path_test = "back_in_black.mp3";
 
-void setup_test() {
-  a_test = new AudioAnalyzer(this, (int) pow(2,12));
+void setup_test(int MIC_FLAG) {
+  if (MIC_FLAG == 0) {
+    a_test = new AudioAnalyzer(this, audio_path_test);
+  } else {
+    a_test = new AudioAnalyzer(this, (int) pow(2,12));
+  }
+  
 }
 
 void draw_test() {

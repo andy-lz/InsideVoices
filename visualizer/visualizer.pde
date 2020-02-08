@@ -1,15 +1,16 @@
 
 int TEST_FLAG = 0;
 int POLY_FLAG = 1;
+int MIC_FLAG = 1;
 
 void setup() {
   size(900, 800);
   // pixelDensity(2);
   if (TEST_FLAG > 0) {
-    setup_test(); // setup for AudioAnalyzer test
+    setup_test(MIC_FLAG); // setup for AudioAnalyzer test
   }
   if (POLY_FLAG > 0) {
-    setup_poly();
+    setup_poly(MIC_FLAG);
   }
   
 }

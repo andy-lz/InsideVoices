@@ -14,12 +14,20 @@ float[] spectrum;
 Boolean drawMode = true;
 int max_time_alive = 60;
 Random random_no;
+String audio_path = "back_in_black.mp3";
 
 
-void setup_poly() {
+void setup_poly(int MIC_FLAG) {
   background(255,255,255);
   nodes = new LinkedList<MovingNode>();
-  a = new AudioAnalyzer(this);
+  if (MIC_FLAG == 0) {
+    a = new AudioAnalyzer(this, audio_path);
+    audioThreshold = 0.05;
+    dy /= 2;
+  } else {
+    a = new AudioAnalyzer(this);
+  }
+  
   random_no = new Random();
 }
 
@@ -29,11 +37,13 @@ void draw_poly() {
   a.analyze();
   amplitude = a.get_amplitude();
   spectrum = a.get_spectrum();
-
   for(int i=0; i < spectrum.length; i+=2) {
     if (spectrum[i] > audioThreshold) {
-      addNewNode(width / a.bands * i * 8, height / 2, 
-        random(-dx, dx), random(-dy* spectrum[i] * 100, dy * spectrum[i] * 100));
+      for (int j = 0; j < spectrum[i] / audioThreshold; j++) {
+        addNewNode(width / a.bands * i * 8, height / 2, 
+          random(-dx, dx), random(-dy* spectrum[i] * 100, dy * spectrum[i] * 100), 
+          spectrum[i] * 2);
+      }
     }
   }
   
@@ -59,12 +69,13 @@ void draw_poly() {
 }
 
 
-void addNewNode(float xPos, float yPos, float dx, float dy) {
-  MovingNode node = new MovingNode(xPos+dx, yPos+dy);
-  //MovingNode node = new MovingNode(xPos, yPos);
-  node.setNumNeighbors(countNumNeighbors(node, maxDistance));
-  if(node.numNeighbors < maxNeighbors) {
-    nodes.add(node);
+void addNewNode(float xPos, float yPos, float dx, float dy, float move_multiplier) {
+    MovingNode node = new MovingNode(xPos+dx, yPos+dy);
+    //MovingNode node = new MovingNode(xPos, yPos);
+    node.setNumNeighbors(countNumNeighbors(node, maxDistance));
+    node.set_multiplier(move_multiplier);
+    if(node.numNeighbors < maxNeighbors) {
+      nodes.add(node);
   }
 }
 
@@ -92,6 +103,7 @@ class MovingNode {
   float nodeRadius = 1;
   float fillColor = 50;
   float lineColorRange = 120;
+  float move_multiply = 1.;
   
   float xVel=0;
   float yVel=0;
@@ -115,8 +127,9 @@ class MovingNode {
   }
   
   void move() {
-    xAccel = (float) random_no.nextGaussian() * accelValue / 2;
-    yAccel = (float) random_no.nextGaussian() * accelValue / 2;
+    
+    xAccel = (float) random_no.nextGaussian() * accelValue / 2 * move_multiply;
+    yAccel = (float) random_no.nextGaussian() * accelValue / 2 * move_multiply;
     
     xVel += xAccel;
     yVel += yAccel;
@@ -148,5 +161,9 @@ class MovingNode {
     int max_time_alive = max(neighborNode.time_alive, this.time_alive);
     lineColor = max(lineColorRange - max_time_alive, 0);
     return lineColor;
+  }
+  
+  void set_multiplier(float multiplier) {
+    this.move_multiply = multiplier;
   }
 }
