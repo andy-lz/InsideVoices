@@ -8,7 +8,7 @@ float dx = 10;
 float dy = 30;
 float maxNeighbors = 10;
 AudioAnalyzer a;
-float audioThreshold = 0.001;
+float audioThreshold = 0.01;
 float amplitude;
 float[] spectrum;
 Boolean drawMode = true;
