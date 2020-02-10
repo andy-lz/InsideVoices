@@ -1,7 +1,25 @@
 # InsideVoices
-ARTV 10300 Project 2
 
-Make Some Noise!: Visualizing Sound
+An audio visualizer written in Processing Java, with a comprehensive, efficient engine for audio analysis. Built for UChicago ARTV 10300.
+
+## AudioAnalyzer
+
+The AudioAnalyzer class allows for FFT/spectral analysis of a given input signal, with functionality built for live microphone input and preset audio files. 
+
+## Polygon Visualizer
+
+The Polygon Visualizer class provides an engine for visualizing audio using polygon graphics, utilizing an efficient linked-list, node-based data structure. 
+
+### Node Generation
+
+Nodes are points in (X,Y) space with position, velocity, acceleration, neighbor-node, and life-span attributes. Nodes are generated with random variation according to signal output from the AudioAnalyzer class. Each node follows an Euler approximation of integrated Brownian motion in X/Y dimensions, with velocity/acceleration adjusted by drift according to signal output. 
+
+### Polygon Generation
+
+Polygons are generated through a k-nearest-neighbor algorithm, updating every node in real-time. Lines are drawn between nearest neighbors -- they exhibit alpha decay according to the lifespan of the longest living node, i.e. each line's colors transition from red to transparent using linear interpolation. 
+
+
+## Draft Notes
 
 Setup:
 - preferably in MADD soundproof space? Or Logan 017
