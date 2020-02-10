@@ -119,4 +119,20 @@ class AudioAnalyzer extends PApplet {
       this.base.line(i, this.base.height/2 , i, this.base.height/2 - this.spectrum[i]*this.base.height/2*5 );
     } 
   }
+  
+  void draw_log_spectrum(int min, int max) {
+    this.base.translate(0,0);
+    this.base.background(255);
+    int spectrum_min = max(min,0);
+    int spectrum_max = min(max, this.bands);
+    int band = spectrum_max - spectrum_min;
+    float log_length = log(band + 100);
+    float log_length_adjustment =  log_length - log(100);
+    for(int i = max(min, 0); i < min(max, this.bands); i++){
+      // The result of the FFT is normalized
+      // draw the line for frequency band i scaling it up by 5 to get more amplitude.
+      this.base.line(this.base.width*((log(i + 100) - log(100))/log_length_adjustment), this.base.height/2, 
+                     this.base.width*((log(i + 100) - log(100))/log_length_adjustment), this.base.height/2 - this.spectrum[i]*this.base.height/2*5);
+    } 
+  }
 }

@@ -6,14 +6,16 @@ LinkedList<MovingNode> nodes;
 float maxDistance = 65;
 float dx = 10;
 float dy = 30;
-float maxNeighbors = 10;
+final float maxNeighbors = 10;
 AudioAnalyzer a;
 float audioThreshold = 0.01;
+final float spectrum_displacement = 10;
+final float log_displacement = log(spectrum_displacement);
 float amplitude;
+float log_bands;
 float[] spectrum;
-Boolean drawMode = true;
 int max_time_alive = 60;
-Random random_no;
+Random random_no;  // random std Normal generator for acceleration values
 String audio_path = "back_in_black.mp3";
 
 
@@ -27,7 +29,7 @@ void setup_poly(int MIC_FLAG) {
   } else {
     a = new AudioAnalyzer(this);
   }
-  
+  log_bands = log(a.bands + spectrum_displacement) - log_displacement;
   random_no = new Random();
 }
 
@@ -39,8 +41,9 @@ void draw_poly() {
   spectrum = a.get_spectrum();
   for(int i=0; i < spectrum.length; i+=2) {
     if (spectrum[i] > audioThreshold) {
+      float log_i = log(i + spectrum_displacement) - log_displacement;
       for (int j = 0; j < spectrum[i] / audioThreshold; j++) {
-        addNewNode(width / a.bands * i * 8, height / 2 + (amplitude - 0.5) * dy, 
+        addNewNode(width / log_bands * log_i, height / 2 + (amplitude - 0.5) * dy, 
           random(-dx, dx), random(-dy* spectrum[i] * 100, dy * spectrum[i] * 100), 
           spectrum[i] * 2);
       }
