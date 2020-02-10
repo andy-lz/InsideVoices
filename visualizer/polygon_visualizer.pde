@@ -40,7 +40,7 @@ void draw_poly() {
   for(int i=0; i < spectrum.length; i+=2) {
     if (spectrum[i] > audioThreshold) {
       for (int j = 0; j < spectrum[i] / audioThreshold; j++) {
-        addNewNode(width / a.bands * i * 8, height / 2, 
+        addNewNode(width / a.bands * i * 8, height / 2 + (amplitude - 0.5) * dy, 
           random(-dx, dx), random(-dy* spectrum[i] * 100, dy * spectrum[i] * 100), 
           spectrum[i] * 2);
       }
@@ -59,7 +59,7 @@ void draw_poly() {
     for(MovingNode neighborNode : currentNode.neighbors) {
       //float lineColor = currentNode.calculateLineColor(neighborNode,maxDistance);
       float lineColor = currentNode.calculateLineColor_decay(neighborNode);
-      stroke(lerpColor(color(100, 100, 255), color(255, 50, 50), 
+      stroke(lerpColor(color(255, 255, 255), color(255, 50, 50), 
              lineColor / currentNode.lineColorRange));
       strokeWeight(lineColor/ 2 / pow(currentNode.lineColorRange, 0.75)); 
       line(currentNode.x,currentNode.y,neighborNode.x,neighborNode.y);
