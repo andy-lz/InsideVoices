@@ -5,7 +5,6 @@ AudioAnalyzer a_test;
 String audio_path_test = "back_in_black.mp3";
 
 void setup_test(int MIC_FLAG) {
-  
   if (MIC_FLAG == 0) {
     // initialize AudioAnalyzer with local file path
     a_test = new AudioAnalyzer(this, audio_path_test);
