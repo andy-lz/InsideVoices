@@ -22,3 +22,10 @@ void draw() {
     draw_test(); // test draw_spectrum() and get() methods in AudioAnalyzer
   } 
 }
+
+void mousePressed() {
+  // get Timer Diagnostics
+  if (timer != null){
+    println(timer.get_average_times());
+  }
+}
