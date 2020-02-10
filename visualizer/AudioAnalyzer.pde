@@ -1,19 +1,19 @@
 import processing.sound.*;
 
 class AudioAnalyzer extends PApplet {
-  SoundObject audio_in;
-  Amplitude amp;
-  FFT fft;
-  int input_stream = 0;
-  int PATH_FLAG = 0;
+  SoundObject audio_in;  // superclass object for all sound inputs
+  Amplitude amp; // amplitude analyzer
+  FFT fft;  // Fourier Fast Transform for spectral analysis
+  int input_stream = 0;  // specify input stream for microphone input
+  int PATH_FLAG = 0;  // determines whether input is from microphone or audio file
   String audio_path;
   int bands = 512;
-  int smoother = 0;
-  float bandwidth;
-  float amplitude;
-  float[] spectrum;
-  float[] volume;
-  PApplet base;
+  int smoother = 0; // Lowell smoother param for spectrum smoothing (NOT IMPLEMENTED)
+  float bandwidth;  // bandwidth value that can help find "color" of music texture (NOT IMPLEMENTED YET)
+  float amplitude;  // current amplitude
+  float[] spectrum;  // current audio spectrum
+  float[] volume;  // current volume values across spectrum, i.e. spectrum.^2 (NOT IMPLEMENTED)
+  PApplet base; 
   
   AudioAnalyzer(PApplet sketch) {
      this.base = sketch;
