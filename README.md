@@ -12,7 +12,7 @@ The Polygon Visualizer provides an engine for visualizing audio using polygon gr
 
 ### Node Generation
 
-Nodes are points in (X,Y) space with position, velocity, acceleration, neighbor-node, and life-span attributes. Nodes are generated with random variation according to signal output from the AudioAnalyzer class. Each Node follows an Euler approximation of integrated Brownian motion in X/Y dimensions, with velocity/acceleration adjusted by drift according to signal output. 
+Nodes are points in (X,Y) space with position, velocity, acceleration, neighbor-node, and life-span attributes. Nodes are generated with random variation according to (log) signal output from the AudioAnalyzer class. Each Node follows an Euler approximation of integrated Brownian motion in X/Y dimensions, with velocity/acceleration adjusted by drift according to signal output. 
 
 ### Polygon Generation
 
