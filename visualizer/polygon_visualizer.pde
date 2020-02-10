@@ -7,7 +7,6 @@ final float maxDistance = 65;
 float dx = 10;
 float dy = 30;
 final float maxNeighbors = 10;
-AudioAnalyzer a;
 float audioThreshold = 0.01;
 final float spectrum_displacement = 10;
 final float log_displacement = log(spectrum_displacement);
@@ -15,7 +14,6 @@ float amplitude, log_bands;
 float[] spectrum;
 int max_time_alive = 60;
 Random random_no;  // random std Normal generator for acceleration values
-String audio_path = "back_in_black.mp3";
 TimerDiagnostic timer;
 
 
@@ -23,11 +21,8 @@ void setup_poly(int MIC_FLAG) {
   background(255,255,255);
   nodes = new LinkedList<MovingNode>();
   if (MIC_FLAG == 0) {
-    a = new AudioAnalyzer(this, audio_path);
     audioThreshold = 0.05;
     dy /= 2;
-  } else {
-    a = new AudioAnalyzer(this);
   }
   log_bands = log(a.bands + spectrum_displacement) - log_displacement;
   random_no = new Random();
@@ -44,7 +39,7 @@ void draw_poly() {
     if (spectrum[i] > audioThreshold) {
       float log_i = log(i + spectrum_displacement) - log_displacement;
       for (int j = 0; j < spectrum[i] / audioThreshold; j++) {
-        addNewNode(width / log_bands * log_i, height / 2 + (amplitude - 0.5) * dy, 
+        addNewNode(width / log_bands * log_i, height / 2, 
           random(-dx, dx), random(-dy* spectrum[i] * 100, dy * spectrum[i] * 100), 
           spectrum[i] * 2);
       }
@@ -60,14 +55,13 @@ void draw_poly() {
       i.remove();
       continue;
     }
-    currentNode.setNumNeighbors( countNumNeighbors(currentNode,maxDistance) );
+    currentNode.setNumNeighbors(countNumNeighbors(currentNode, maxDistance));
     for(MovingNode neighborNode : currentNode.neighbors) {
       //float lineColor = currentNode.calculateLineColor(neighborNode,maxDistance);
       float lineColor = currentNode.calculateLineColor_decay(neighborNode);
-      stroke(lerpColor(color(255, 255, 255), color(255, 50, 50), 
-             lineColor / currentNode.lineColorRange));
-      strokeWeight(lineColor/ 2 / pow(currentNode.lineColorRange, 0.75)); 
-      line(currentNode.x,currentNode.y,neighborNode.x,neighborNode.y);
+      stroke(lerpColor_preset(lineColor / currentNode.lineColorRange));
+      strokeWeight(1.5 - lineColor * 1.5 / currentNode.lineColorRange); 
+      line(currentNode.x,currentNode.y, neighborNode.x,neighborNode.y);
     }
     currentNode.display();
   }
@@ -98,6 +92,11 @@ int countNumNeighbors(MovingNode nodeA, float maxNeighborDistance) {
     }
   }
   return numNeighbors;
+}
+
+color lerpColor_preset(float x) {
+  color c = color(255,50 + 205*x, 50 + 205*x);
+  return c;
 }
 
 class MovingNode {
@@ -165,9 +164,8 @@ class MovingNode {
   }
   
   float calculateLineColor_decay(MovingNode neighborNode){
-    int max_time_alive = max(neighborNode.time_alive, this.time_alive);
-    lineColor = max(lineColorRange - max_time_alive, 0);
-    return lineColor;
+    int max_time_alive = max(neighborNode.time_alive, this.time_alive, 0);
+    return max_time_alive;
   }
   
   void set_multiplier(float multiplier) {
