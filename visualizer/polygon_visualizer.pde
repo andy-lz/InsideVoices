@@ -3,7 +3,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 LinkedList<MovingNode> nodes;
-float maxDistance = 65;
+final float maxDistance = 65;
 float dx = 10;
 float dy = 30;
 final float maxNeighbors = 10;
@@ -11,12 +11,12 @@ AudioAnalyzer a;
 float audioThreshold = 0.01;
 final float spectrum_displacement = 10;
 final float log_displacement = log(spectrum_displacement);
-float amplitude;
-float log_bands;
+float amplitude, log_bands;
 float[] spectrum;
 int max_time_alive = 60;
 Random random_no;  // random std Normal generator for acceleration values
 String audio_path = "back_in_black.mp3";
+TimerDiagnostic timer;
 
 
 void setup_poly(int MIC_FLAG) {
@@ -31,14 +31,15 @@ void setup_poly(int MIC_FLAG) {
   }
   log_bands = log(a.bands + spectrum_displacement) - log_displacement;
   random_no = new Random();
+  timer = new TimerDiagnostic(2);
 }
 
 void draw_poly() {
-  
   background(255, 255, 255);
   a.analyze();
   amplitude = a.get_amplitude();
   spectrum = a.get_spectrum();
+  //timer.setLapTime(0);
   for(int i=0; i < spectrum.length; i+=2) {
     if (spectrum[i] > audioThreshold) {
       float log_i = log(i + spectrum_displacement) - log_displacement;
@@ -49,7 +50,8 @@ void draw_poly() {
       }
     }
   }
-  
+  //timer.lap(0);
+  //timer.setLapTime(1);
   // O(n^2) line drawing between nodes
   ListIterator<MovingNode> i = nodes.listIterator();
   while (i.hasNext()) {
@@ -69,6 +71,7 @@ void draw_poly() {
     }
     currentNode.display();
   }
+  //timer.lap(1);
 }
 
 
@@ -86,8 +89,9 @@ int countNumNeighbors(MovingNode nodeA, float maxNeighborDistance) {
   int numNeighbors = 0;
   nodeA.clearNeighbors();
   float d2 = maxNeighborDistance * maxNeighborDistance;
+  float distance;
   for(MovingNode nodeB : nodes) {
-    float distance = (nodeA.x-nodeB.x)*(nodeA.x-nodeB.x) + (nodeA.y-nodeB.y)*(nodeA.y-nodeB.y);
+    distance = (nodeA.x-nodeB.x)*(nodeA.x-nodeB.x) + (nodeA.y-nodeB.y)*(nodeA.y-nodeB.y);
     if(distance < d2) {
       numNeighbors++;
       nodeA.addNeighbor(nodeB);
