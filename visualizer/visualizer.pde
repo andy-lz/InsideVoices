@@ -9,8 +9,9 @@ AudioAnalyzer a;
 String audio_path = "back_in_black.mp3";
 
 void setup() {
-  size(1200, 600);
-  // pixelDensity(2);
+  size(1200, 600, P2D);
+  smooth(8);
+  pixelDensity(2);
   if (MIC_FLAG == 0) {
     a = new AudioAnalyzer(this, audio_path);
   } else {

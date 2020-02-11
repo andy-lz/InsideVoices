@@ -30,6 +30,7 @@ void setup_poly(int MIC_FLAG) {
 }
 
 void draw_poly() {
+  float lineColor;
   background(255, 255, 255);
   a.analyze();
   amplitude = a.get_amplitude();
@@ -58,10 +59,10 @@ void draw_poly() {
     currentNode.setNumNeighbors(countNumNeighbors(currentNode, maxDistance));
     for(MovingNode neighborNode : currentNode.neighbors) {
       //float lineColor = currentNode.calculateLineColor(neighborNode,maxDistance);
-      float lineColor = currentNode.calculateLineColor_decay(neighborNode);
+      lineColor = currentNode.calculateLineColor_decay(neighborNode);
       stroke(lerpColor_preset(lineColor / currentNode.lineColorRange));
       strokeWeight(1.5 - lineColor * 1.5 / currentNode.lineColorRange); 
-      line(currentNode.x,currentNode.y, neighborNode.x,neighborNode.y);
+      line(currentNode.x, currentNode.y, neighborNode.x, neighborNode.y);
     }
     currentNode.display();
   }
