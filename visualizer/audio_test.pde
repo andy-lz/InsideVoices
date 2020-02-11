@@ -11,7 +11,7 @@ void draw_test() {
   // update audio analysis for each draw()
   a.analyze();
   // visualize spectrum
-  a.draw_spectrum(0,512);
+  a.draw_log_spectrum(0,512);
   // you can get the spectrum (a float array of values) using get_spectrum() method
   spectrum_test = a.get_spectrum();
   // you can get average amplitude (float from 0 to 1) using get_amplitude() method
